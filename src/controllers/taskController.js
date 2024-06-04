@@ -1,30 +1,23 @@
-const Task = require('../models/Task');
+const taskService = require('../services/taskService');
 
 exports.getTasks = async (req, res) => {
     try {
-        const tasks = await Task.find({ user: req.user.id }).sort({ date: -1 });
+        const tasks = await taskService.getTasksByUser(req.user.id);
         res.json(tasks);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server error');
+        res.status(500).send(err.message);
     }
 };
 
 exports.createTask = async (req, res) => {
     const { title, description, dueDate, priority } = req.body;
     try {
-        const newTask = new Task({
-            title,
-            description,
-            dueDate,
-            priority,
-            user: req.user.id,
-        });
-        const task = await newTask.save();
+        const task = await taskService.createTask(title, description, dueDate, priority, req.user.id);
         res.json(task);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server error');
+        res.status(500).send(err.message);
     }
 };
 
@@ -32,30 +25,20 @@ exports.updateTask = async (req, res) => {
     const { title, description, dueDate, priority, completed } = req.body;
     const taskFields = { title, description, dueDate, priority, completed };
     try {
-        let task = await Task.findById(req.params.id);
-        if (!task) return res.status(404).json({ msg: 'Task not found' });
-        if (task.user.toString() !== req.user.id) {
-            return res.status(401).json({ msg: 'Not authorized' });
-        }
-        task = await Task.findByIdAndUpdate(req.params.id, { $set: taskFields }, { new: true });
+        const task = await taskService.updateTaskById(req.params.id, taskFields, req.user.id);
         res.json(task);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server error');
+        res.status(500).send(err.message);
     }
 };
 
 exports.deleteTask = async (req, res) => {
     try {
-        let task = await Task.findById(req.params.id);
-        if (!task) return res.status(404).json({ msg: 'Task not found' });
-        if (task.user.toString() !== req.user.id) {
-            return res.status(401).json({ msg: 'Not authorized' });
-        }
-        await Task.findByIdAndDelete(req.params.id);
+        await taskService.deleteTaskById(req.params.id, req.user.id);
         res.json({ msg: 'Task deleted' });
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server error');
+        res.status(500).send(err.message);
     }
 };
