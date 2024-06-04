@@ -9,11 +9,11 @@ const routes = require('./routes');
 dotenv.config();
 
 // Conectar a la base de datos
-/* connectDB(); */
+connectDB();
 
 const app = express();
 const server = http.createServer(app);
-const io = socketio(server);
+/* const io = socketio(server); */
 
 // Middleware
 app.use(cors());
@@ -29,7 +29,7 @@ server.listen(PORT, () => {
 });
 
 // Configurar Socket.io
-io.on('connection', (socket) => {
+/* io.on('connection', (socket) => {
     console.log('New WebSocket connection');
 
     socket.on('disconnect', () => {
@@ -37,4 +37,4 @@ io.on('connection', (socket) => {
     });
 });
 
-module.exports = io;
+module.exports = io; */
