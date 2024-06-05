@@ -1,12 +1,12 @@
 const taskService = require('../services/taskService');
+const { handleServerError } = require('../helpers/errorHandler.js');
 
 exports.getTasks = async (req, res) => {
     try {
         const tasks = await taskService.getTasksByUser(req.user.id);
         res.json(tasks);
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send(err.message);
+        handleServerError(err, res);
     }
 };
 
@@ -16,8 +16,7 @@ exports.createTask = async (req, res) => {
         const task = await taskService.createTask(title, description, dueDate, priority, req.user.id);
         res.json(task);
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send(err.message);
+        handleServerError(err, res);
     }
 };
 
@@ -28,8 +27,7 @@ exports.updateTask = async (req, res) => {
         const task = await taskService.updateTaskById(req.params.id, taskFields, req.user.id);
         res.json(task);
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send(err.message);
+        handleServerError(err, res);
     }
 };
 
@@ -38,7 +36,6 @@ exports.deleteTask = async (req, res) => {
         await taskService.deleteTaskById(req.params.id, req.user.id);
         res.json({ msg: 'Task deleted' });
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send(err.message);
+        handleServerError(err, res);
     }
 };

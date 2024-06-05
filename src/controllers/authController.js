@@ -1,4 +1,5 @@
 const authService = require('../services/authService.js');
+const { handleError } = require('../helpers/errorHandler.js');
 
 exports.registerUser = async (req, res) => {
     const { name, email, password } = req.body;
@@ -6,8 +7,7 @@ exports.registerUser = async (req, res) => {
         const token = await authService.registerUser(name, email, password);
         res.json({ token });
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send(err.message);
+        handleServerError(err, res);
     }
 };
 
@@ -17,7 +17,6 @@ exports.loginUser = async (req, res) => {
         const token = await authService.loginUser(email, password);
         res.json({ token });
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send(err.message);
+        handleServerError(err, res);
     }
 };
