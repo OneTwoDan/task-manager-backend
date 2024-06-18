@@ -13,7 +13,6 @@ connectDB();
 
 const app = express();
 const server = http.createServer(app);
-/* const io = socketio(server); */
 
 // Middleware
 app.use(cors());
@@ -27,14 +26,3 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
-
-// Configurar Socket.io
-/* io.on('connection', (socket) => {
-    console.log('New WebSocket connection');
-
-    socket.on('disconnect', () => {
-        console.log('WebSocket disconnected');
-    });
-});
-
-module.exports = io; */

@@ -1,5 +1,5 @@
 const authService = require('../services/authService.js');
-const { handleError } = require('../helpers/errorHandler.js');
+const { handleServerError } = require('../helpers/errorHandler.js');
 
 exports.registerUser = async (req, res) => {
     const { name, email, password } = req.body;
