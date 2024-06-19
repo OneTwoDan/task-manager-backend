@@ -39,3 +39,31 @@ exports.deleteTask = async (req, res) => {
         handleServerError(err, res);
     }
 };
+
+exports.getFilteredTasks = async (req, res) => {
+    try {
+        const { userId, fromDate, toDate, status } = req.query;
+
+        let query = { user: req.user._id };
+
+        if (userId) {
+            query.user = userId;
+        }
+        if (fromDate && toDate) {
+            query.dueDate = { $gte: new Date(fromDate), $lte: new Date(toDate) };
+        } else if (fromDate) {
+            query.dueDate = { $gte: new Date(fromDate) };
+        } else if (toDate) {
+            query.dueDate = { $lte: new Date(toDate) };
+        }
+        if (status) {
+            query.status = status;
+        }
+
+        const tasks = await Task.find(query);
+
+        res.json(tasks);
+    } catch (err) {
+        handleServerError(err, res);
+    }
+};
