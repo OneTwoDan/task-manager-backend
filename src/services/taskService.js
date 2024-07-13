@@ -1,4 +1,5 @@
 const Task = require('../models/Task');
+const Tag = require('../models/Tag');
 
 exports.getTasksByUser = async (userId) => {
     try {
@@ -24,6 +25,16 @@ exports.createTask = async (title, description, dueDate, priority, userId, proje
             }
         }
 
+        const tagObjects = await Promise.all(tags.map(async tagName => {
+            let tag = await Tag.findOne({ name: tagName });
+            if (!tag) {
+                // Si la tag no existe, crearla
+                tag = new Tag({ name: tagName });
+                await tag.save();
+            }
+            return tag;
+        }));
+
         const newTask = new Task({
             title,
             description,
@@ -31,7 +42,7 @@ exports.createTask = async (title, description, dueDate, priority, userId, proje
             priority,
             createdBy: userId,
             project: projectId || null,
-            tags: tags || [],
+            tags: tagObjects.map(tag => tag._id),
         });
 
         const task = await newTask.save();
