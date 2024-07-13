@@ -10,7 +10,8 @@ const TaskSchema = new mongoose.Schema({
     status: { type: String, enum: ['pending', 'in-progress', 'completed'], default: 'pending' },
     completed: { type: Boolean, default: false },
     tags: [{ type: String }],
-    starred: { type: Boolean, default: false }
+    starred: { type: Boolean, default: false },
+    project: { type: mongoose.Schema.Types.ObjectId, ref: 'Project', required: false }
 });
 
 module.exports = mongoose.model('Task', TaskSchema);

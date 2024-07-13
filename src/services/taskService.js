@@ -9,19 +9,42 @@ exports.getTasksByUser = async (userId) => {
     }
 };
 
-exports.createTask = async (title, description, dueDate, priority, userId) => {
+exports.createTask = async (title, description, dueDate, priority, userId, projectId, tags) => {
     try {
+        let project = null;
+        if (projectId) {
+            project = await Project.findById(projectId);
+            if (!project) {
+                throw new Error('Project not found');
+            }
+
+            const isMember = project.members.some(member => member.user.toString() === userId);
+            if (!isMember) {
+                throw new Error('Not authorized');
+            }
+        }
+
         const newTask = new Task({
             title,
             description,
             dueDate,
             priority,
-            user: userId,
+            createdBy: userId,
+            project: projectId || null,
+            tags: tags || [],
         });
+
         const task = await newTask.save();
+
+        if (projectId) {
+            project.tasks.push(task._id);
+            await project.save();
+        }
+
         return task;
     } catch (err) {
-        throw new Error('Server error');
+        console.error(err);
+        throw new Error(err.message);
     }
 };
 
